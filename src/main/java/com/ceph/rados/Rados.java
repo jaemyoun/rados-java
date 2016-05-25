@@ -422,8 +422,8 @@ public class Rados extends RadosBase {
       handleReturnCode(new Callable<Integer>() {
         @Override
         public Integer call() throws Exception {
-          // return rados.rados_aio_create_completion(null, null, null, comp);
-          return 0;
+          return rados.rados_aio_create_completion(null, null, null, comp);
+          // return 0;
         }
       }, "Failed to create completion for Asychronous IO");
       // System.out.println("### Ending create completion");

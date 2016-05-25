@@ -585,4 +585,9 @@ public final class TestRados {
             assertTrue(result.getOutput().contains("ceph version"));
         }
     }
+
+    @Test
+    public void testCreateCompletion() throws Exception {
+      rados.createCompletion();
+    }
 }
