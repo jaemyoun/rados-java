@@ -83,6 +83,10 @@ public interface Rados extends Library {
     int rados_read_op_operate(Pointer read_op, Pointer ioctx, String oid, int flags);
     int rados_shutdown(Pointer cluster);
 
+    // Asychronous IO
+    int rados_aio_create_completion(Pointer cb_arg, Pointer cb_complete, Pointer cb_safe, PointerByReference pc);
+    int rados_aio_read(Pointer ioctx, String oid, Pointer completion, byte[] buf, int len, long off);
+
     //	read, write, remove extended attributes
     int rados_getxattr(Pointer ioctx, String oid, String xattrName, byte[] buf, long len);
     int rados_setxattr(Pointer ioctx, String oid, String xattrName, byte[] buf, long len);
