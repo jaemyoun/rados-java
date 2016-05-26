@@ -588,6 +588,39 @@ public final class TestRados {
 
     @Test
     public void testCreateCompletion() throws Exception {
-      rados.createCompletion();
+        Completion comp = ioctx.createCompletion();
+
+        String oid = "rados-java";
+
+        try {
+            byte[] buffer = new byte[20];
+            // use a fix seed so that we always get the same data
+            new Random(42).nextBytes(buffer);
+
+            ioctx.write(oid, buffer);
+
+            int expectedFileSize = buffer.length;
+            assertEquals("The size doesn't match after the append", expectedFileSize, ioctx.stat(oid).getSize());
+
+            byte[] readBuffer = new byte[expectedFileSize];
+            System.out.println("### Starting aio read");
+            int err = ioctx.aioRead(comp, oid, expectedFileSize, 0, readBuffer);
+            System.out.println("### Ending aio read: " + err);
+
+            System.out.println("### Starting wait for complete");
+            ioctx.aioWaitForComplete(comp);
+            System.out.println("### Ending wait");
+
+            for (int i = 0; i < expectedFileSize; i++) {
+                System.out.println("### loop: " + i + " expected: " + buffer[i] + ",but " + readBuffer[i]);
+                // assertEquals(buffer[i], readBuffer[i]);
+            }
+        } finally {
+            System.out.println("### Starting final tasks");
+            ioctx.aioReleaseCompletion(comp);
+            System.out.println("### Released completion");
+            // cleanupObject(rados, ioctx, oid);
+            System.out.println("### Ending final tasks");
+        }
     }
 }

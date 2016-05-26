@@ -344,9 +344,9 @@ public class IoCTX extends RadosBase {
     public void append(String oid, byte[] buf) throws RadosException {
         this.append(oid, buf, buf.length);
     }
-    
+
     /**
-     * 
+     *
      * @param oid
      *           The name to append to
      * @param buf
@@ -572,7 +572,7 @@ public class IoCTX extends RadosBase {
 
     /**
      * Get the value of an extended attribute on an object.
-     * 
+     *
      * @param oid
      *          The name of the object
      * @param xattrName
@@ -598,7 +598,7 @@ public class IoCTX extends RadosBase {
 
     /**
      * Set an extended attribute on an object.
-     * 
+     *
      * @param oid
      *          The name of the object
      * @param xattrName
@@ -626,7 +626,7 @@ public class IoCTX extends RadosBase {
 
     /**
      * Delete an extended attribute from an object.
-     * 
+     *
      * @param oid
      *          The name of the object
      * @param xattrName
@@ -642,5 +642,55 @@ public class IoCTX extends RadosBase {
             }
         }, "Failed to remove extended attribute %s from %s", xattrName, oid);
    }
+
+    /**
+     * Asynchronous create completion
+     */
+    public Completion createCompletion() throws RadosException {
+        final Pointer p = new Memory(Pointer.SIZE);
+    System.out.println("### Starting createCompletion");
+        handleReturnCode(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return rados.rados_aio_create_completion(null, null, null, p);
+            }
+        }, "Failed to create completion for Asychronous IO");
+    System.out.println("### Ending createCompletion");
+        return new Completion(p);
+    }
+
+    /**
+     * Read data asynchronously
+     */
+    public int aioRead(final Completion comp, final String oid, final int length, final long offset, final byte[] buf)
+            throws RadosException {
+        if (length < 0) {
+            throw new IllegalArgumentException("Length shouldn't be a negative value");
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset shouldn't be a negative value");
+        }
+
+        return handleReturnCode(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return rados.rados_aio_read(getPointer(), oid, comp.getPointer(), buf, length, offset);
+            }
+        }, "Failed to read object %s using offset %s and length %s asynchronously", oid, offset, length);
+    }
+
+    /**
+     * Wait for complete
+     */
+    public int aioWaitForComplete(Completion comp) throws RadosException {
+        return rados.rados_aio_wait_for_complete(comp.getPointer());
+    }
+
+    /**
+     * Release Completion
+     */
+    public void aioReleaseCompletion(Completion comp){
+        rados.rados_aio_release(comp.getPointer());
+    }
 
 }
