@@ -588,7 +588,7 @@ public final class TestRados {
 
     @Test
     public void testCreateCompletion() throws Exception {
-        Completion comp = ioctx.createCompletion();
+        final Completion comp = ioctx.createCompletion();
 
         String oid = "rados-java";
 
@@ -611,15 +611,15 @@ public final class TestRados {
             ioctx.aioWaitForComplete(comp);
             System.out.println("### Ending wait");
 
-            for (int i = 0; i < expectedFileSize; i++) {
-                System.out.println("### loop: " + i + " expected: " + buffer[i] + ",but " + readBuffer[i]);
-                // assertEquals(buffer[i], readBuffer[i]);
-            }
+            // for (int i = 0; i < expectedFileSize; i++) {
+            //     System.out.println("### loop: " + i + " expected: " + buffer[i] + ",but " + readBuffer[i]);
+            //     // assertEquals(buffer[i], readBuffer[i]);
+            // }
         } finally {
             System.out.println("### Starting final tasks");
             ioctx.aioReleaseCompletion(comp);
             System.out.println("### Released completion");
-            // cleanupObject(rados, ioctx, oid);
+            cleanupObject(rados, ioctx, oid);
             System.out.println("### Ending final tasks");
         }
     }

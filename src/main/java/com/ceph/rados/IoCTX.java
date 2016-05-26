@@ -648,14 +648,16 @@ public class IoCTX extends RadosBase {
      */
     public Completion createCompletion() throws RadosException {
         final Pointer p = new Memory(Pointer.SIZE);
-    System.out.println("### Starting createCompletion");
+        System.out.println("### Pointer: " + p.getPointer(0));
+        System.out.println("### Starting createCompletion");
         handleReturnCode(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
                 return rados.rados_aio_create_completion(null, null, null, p);
             }
         }, "Failed to create completion for Asychronous IO");
-    System.out.println("### Ending createCompletion");
+        System.out.println("### Ending createCompletion");
+        System.out.println("### Pointer: " + p.getPointer(0));
         return new Completion(p);
     }
 
@@ -671,19 +673,28 @@ public class IoCTX extends RadosBase {
             throw new IllegalArgumentException("Offset shouldn't be a negative value");
         }
 
-        return handleReturnCode(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
+        // return handleReturnCode(new Callable<Integer>() {
+        //     @Override
+        //     public Integer call() throws Exception {
+              System.out.println("### oid: " + oid);
+              System.out.println("### length: " + length);
+              System.out.println("### offset: " + offset);
+              System.out.println("### getPointer: " + comp.getPointer());
                 return rados.rados_aio_read(getPointer(), oid, comp.getPointer(), buf, length, offset);
-            }
-        }, "Failed to read object %s using offset %s and length %s asynchronously", oid, offset, length);
+        //     }
+        // }, "Failed to read object %s using offset %s and length %s asynchronously", oid, offset, length);
     }
 
     /**
      * Wait for complete
      */
-    public int aioWaitForComplete(Completion comp) throws RadosException {
-        return rados.rados_aio_wait_for_complete(comp.getPointer());
+    public int aioWaitForComplete(final Completion comp) throws RadosException {
+        // return handleReturnCode(new Callable<Integer>() {
+        //     @Override
+        //     public Integer call() throws Exception {
+                return rados.rados_aio_wait_for_complete(comp.getPointer());
+        //     }
+        // }, "Failed to wait for completion");
     }
 
     /**
