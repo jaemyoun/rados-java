@@ -86,6 +86,7 @@ public interface Rados extends Library {
     // Asynchronous IO
     int rados_aio_create_completion(Pointer cb_arg, Pointer cb_complete, Pointer cb_safe, Pointer pc);
     int rados_aio_read(Pointer ioctx, String oid, Pointer completion, byte[] buf, int len, long off);
+    int rados_aio_write(Pointer io, String oid, Pointer completion, byte[] buf, int len, long off);
     int rados_aio_wait_for_complete(Pointer c);
     void rados_aio_release(Pointer c);
 

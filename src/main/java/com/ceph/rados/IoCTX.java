@@ -673,17 +673,31 @@ public class IoCTX extends RadosBase {
             throw new IllegalArgumentException("Offset shouldn't be a negative value");
         }
 
-        // return handleReturnCode(new Callable<Integer>() {
-        //     @Override
-        //     public Integer call() throws Exception {
-              System.out.println("### oid: " + oid);
-              System.out.println("### length: " + length);
-              System.out.println("### offset: " + offset);
-              System.out.println("### getPointer: " + comp.getPointer());
+        return handleReturnCode(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                System.out.println("### oid: " + oid);
+                System.out.println("### length: " + length);
+                System.out.println("### offset: " + offset);
+                System.out.println("### getPointer: " + comp.getPointer());
+                System.out.println("### buf: " + buf);
                 return rados.rados_aio_read(getPointer(), oid, comp.getPointer(), buf, length, offset);
-        //     }
-        // }, "Failed to read object %s using offset %s and length %s asynchronously", oid, offset, length);
+            }
+        }, "Failed to read object %s using offset %s and length %s asynchronously", oid, offset, length);
     }
+
+    public int aioWrite(final Completion comp, final String oid, final int length, final long offset, final byte[] buf)
+            throws RadosException {
+        if (length < 0) {
+            throw new IllegalArgumentException("Length shouldn't be a negative value");
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset shouldn't be a negative value");
+        }
+
+        return rados.rados_aio_write(getPointer(), oid, comp.getPointer(), buf, length, offset);
+    }
+
 
     /**
      * Wait for complete
